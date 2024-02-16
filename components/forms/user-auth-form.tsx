@@ -16,6 +16,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import GoogleSignInButton from "../github-auth-button";
+import { setAuthState } from "@/app/store/auth-slice";
+import { useAppDispatch } from "@/app/store";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Enter a valid email address" }),
@@ -24,6 +26,8 @@ const formSchema = z.object({
 type UserFormValue = z.infer<typeof formSchema>;
 
 export default function UserAuthForm() {
+
+  const dispatch = useAppDispatch()
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl");
   const [loading, setLoading] = useState(false);
@@ -36,11 +40,12 @@ export default function UserAuthForm() {
   });
 
   const onSubmit = async (data: UserFormValue) => {
-    // signIn("credentials", {
-    //   email: data.email,
-    //   callbackUrl: callbackUrl ?? "/dashboard",
-    // });
+    dispatch(setAuthState({
+      isLoggedIn: true,
+      userData: data,
+    }))
 
+    console.log("[DATA]", data)
   };
 
   return (
